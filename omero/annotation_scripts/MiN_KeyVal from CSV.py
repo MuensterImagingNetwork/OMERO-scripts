@@ -220,13 +220,16 @@ def keyval_from_csv(conn, script_params):
         images_by_name, wells_by_name, plates_by_name, whole_screen = get_children_by_name(target_object)
 
         image_index = header.index("image")
-        well_index = header.index("well")
-        plate_index = header.index("plate")
+        if data_type=="Plate" or data_type=="Screen":
+            well_index = header.index("well")
+            plate_index = header.index("plate")
+            print("well_index:", well_index,
+                  "plate_index:", plate_index)
+
         if image_index == -1:
             # first header is the img-name column, if 'image' not found
             image_index = 0
-        print("image_index:", image_index, "well_index:", well_index,
-              "plate_index:", plate_index)
+        print("image_index:", image_index)
         rows = data[1:]
 
         nimg_updated = 0
@@ -254,44 +257,50 @@ def keyval_from_csv(conn, script_params):
                 else:
                     print("Image not found:", image_name)
 
-            # checks if there is a well name and if it is found anywhere in the dictionaries
-            if obj is None and well_index > -1 and len(row[well_index]) > 0:
-                well_name = row[well_index]
-                if well_name in wells_by_name and len(whole_screen)==0:
-                    obj = wells_by_name[well_name]
-                    print("Annotating Well:", obj.id, well_name)
-                elif len(whole_screen)!=0:
-                    try:
-                        if well_name in wells_by_name[row[plate_index]]:
-                            obj = wells_by_name[row[plate_index]][well_name]
-                            print("Annotating Well:", obj.id, well_name)
-                    except:
-                        pass
-                else:
-                    print("Well not found:", well_name)
+            if data_type == "Plate" or data_type == "Screen":
 
-            # checks if there is a plate name and if it is found anywhere in the dictionaries
-            if obj is None and plate_index > -1 and len(row[plate_index]) > 0:
-                plate_name = row[plate_index]
-                if plate_name == target_object.name and len(whole_screen)==0:
-                    obj = target_object
-                    print("Annotating Plate:", obj.id, plate_name)
-                elif len(whole_screen)!=0:
-                    try:
-                        if plate_name in whole_screen:
-                            obj = plates_by_name[plate_name]
-                            print("Annotating Plate:", obj.id, plate_name)
-                    except:
-                        pass
-                else:
-                    print("Plate not found:",plate_name)
+                # checks if there is a well name and if it is found anywhere in the dictionaries
+                if obj is None and well_index > -1 and len(row[well_index]) > 0:
+                    well_name = row[well_index]
+                    if well_name in wells_by_name and len(whole_screen)==0:
+                        obj = wells_by_name[well_name]
+                        print("Annotating Well:", obj.id, well_name)
+                    elif len(whole_screen)!=0:
+                        try:
+                            if well_name in wells_by_name[row[plate_index]]:
+                                obj = wells_by_name[row[plate_index]][well_name]
+                                print("Annotating Well:", obj.id, well_name)
+                        except:
+                            pass
+                    else:
+                        print("Well not found:", well_name)
+
+                # checks if there is a plate name and if it is found anywhere in the dictionaries
+                if obj is None and plate_index > -1 and len(row[plate_index]) > 0:
+                    plate_name = row[plate_index]
+                    if plate_name == target_object.name and len(whole_screen)==0:
+                        obj = target_object
+                        print("Annotating Plate:", obj.id, plate_name)
+                    elif len(whole_screen)!=0:
+                        try:
+                            if plate_name in whole_screen:
+                                obj = plates_by_name[plate_name]
+                                print("Annotating Plate:", obj.id, plate_name)
+                        except:
+                            pass
+                    else:
+                        print("Plate not found:",plate_name)
 
             if obj is None:
                 msg = f"Can't find object by image, well or plate name"
                 print(msg)
                 continue
 
-            cols_to_ignore = [image_index, well_index, plate_index]
+            if data_type == "Plate" or data_type == "Screen":
+                cols_to_ignore = [image_index, well_index, plate_index]
+            else:
+                cols_to_ignore = [image_index]
+
             updated = annotate_object(conn, obj, header, row, cols_to_ignore)
             if updated:
                 nimg_updated += 1
