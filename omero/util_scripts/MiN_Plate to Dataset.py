@@ -3,8 +3,7 @@
 """
 
 This script converts Plates to Datasets.
-All images are linked to a new Dataset and - if desired -
-the link to the original Plate is cut.
+All images are linked to a new Dataset and - if desired - the link to the original Plate is cut.
 
 @author Jens Wendt
 <a href="mailto:jens.wendt@uni-muenster.de">jens.wendt@uni-muenster.de</a>
@@ -20,7 +19,7 @@ import re   # for sorting of list of images
 from omero.rtypes import rint, rlong, rstring, robject, unwrap
 
 
-def plate_to_dataset (conn, script_params)
+def plate_to_dataset (conn, script_params):
 
     id = script_params["Plate_ID"]
     plate = conn.getObject("Plate",id)
@@ -47,7 +46,7 @@ def plate_to_dataset (conn, script_params)
     # link the images to the new Dataset
     ez.link_images_to_dataset(conn, image_ids, dataset_id)
 
-    message = "Linked %d image(s) to the new Dataset %s" % len(image_list),dataset_name
+    message = "Linked %d image(s) to the new Dataset %s" % (len(image_list),dataset_name)
 
 
     return new_obj, message
@@ -100,3 +99,6 @@ the link to the original Plate is cut.""",
 
     finally:
         client.closeSession()
+
+if __name__ == "__main__":
+    run_script()
