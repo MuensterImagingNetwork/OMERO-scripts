@@ -30,7 +30,8 @@ def generate_namelist(conn, script_params):
             images=list(obj.listChildren())
             for image in images:
                 name = image.getName()
-                names.append(name)
+                image_id  = image.getID()
+                names.append([name,image_id])
                 imageCounter=imageCounter+1
 
         if obj_type=='Plate':
@@ -39,7 +40,8 @@ def generate_namelist(conn, script_params):
                 for wellsample in well.listChildren():
                     img = wellsample.getImage()
                     name = img.getName()
-                    names.append(name)
+                    image_id = image.getID()
+                    names.append([name, image_id])
                     imageCounter = imageCounter + 1
 
         # a bit convoluted function to sort the names list naturally
@@ -50,8 +52,8 @@ def generate_namelist(conn, script_params):
         names.sort(key=alphanum_key)
 
         # print loop
-        for name in names:
-            print(name)
+        for img in names:
+            print(img[0]+" ; "+img[1])
         print("________________________________________________")
         names.clear()   # clear the names list for the nex object
         objectCounter = objectCounter + 1
