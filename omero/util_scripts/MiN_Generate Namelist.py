@@ -30,7 +30,7 @@ def generate_namelist(conn, script_params):
             images=list(obj.listChildren())
             for image in images:
                 name = image.getName()
-                image_id  = image.getID()
+                image_id  = image.getId()
                 names.append([name,image_id])
                 imageCounter=imageCounter+1
 
@@ -40,7 +40,7 @@ def generate_namelist(conn, script_params):
                 for wellsample in well.listChildren():
                     img = wellsample.getImage()
                     name = img.getName()
-                    image_id = image.getID()
+                    image_id = image.getId()
                     names.append([name, image_id])
                     imageCounter = imageCounter + 1
 
@@ -48,16 +48,24 @@ def generate_namelist(conn, script_params):
         # which is needed for the .csv generation
         # works with only re, which is installed
         convert = lambda text: int(text) if text.isdigit() else text.lower()
-        alphanum_key = lambda x: [convert(c) for c in re.split('([0-9]+)', x)]
+        alphanum_key = lambda x: [convert(c) for c in re.split('([0-9]+)', x[0])]
         names.sort(key=alphanum_key)
+        print("names after sorting  ", names)
 
+        check_ID = script_params["Also_show_Image_IDs"]
         # print loop
-        for img in names:
-            print(img[0]+" ; "+img[1])
-        print("________________________________________________")
-        names.clear()   # clear the names list for the nex object
-        objectCounter = objectCounter + 1
-
+        if check_ID==True:
+            for img in names:
+                print(img[0],",",img[1])
+            print("________________________________________________")
+            names.clear()   # clear the names list for the nex object
+            objectCounter = objectCounter + 1
+        else:
+            for img in names:
+                print(img[0])
+            print("________________________________________________")
+            names.clear()   # clear the names list for the nex object
+            objectCounter = objectCounter + 1
 
     return  imageCounter, objectCounter
 
@@ -76,12 +84,16 @@ def run_script():
 
         scripts.String(
             "Data_Type", optional=False, grouping="1",
-            description="Choose source of images (only Dataset supported)",
+            description="Choose source of images",
             values=data_types, default="Dataset"),
 
         scripts.List(
             "IDs", optional=False, grouping="2",
             description="List of Dataset IDs").ofType(rlong(0)),
+
+        scripts.Bool(
+            "Also_show_Image_IDs", optional=False, grouping="3", default=False,
+            description="Also display the Image IDs next to the image names"),
     )
 
     try:
