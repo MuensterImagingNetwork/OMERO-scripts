@@ -386,7 +386,7 @@ def datasets_to_plates(conn, script_params):
             plate = plates[0]
             message += " New plate created: %s" % plate.getName()
         else:
-            message += " %s plates created" % len(plates)
+            message += " New plate created: %s" % plates[0].getName()     #" %s plates created" % len(plates)
         if len(plates) == len(links):
             message += "."
         # else:
