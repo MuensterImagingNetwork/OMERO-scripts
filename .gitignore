@@ -3,3 +3,10 @@
 *.pyc
 .gitignore
 *.DS_Store*
+.vs/ProjectSettings.json
+.vs/slnx.sqlite
+.vs/VSWorkspaceState.json
+.vs/OMERO-scripts/FileContentIndex/40025e88-ec82-4df8-a556-bca170e09458.vsidx
+.vs/OMERO-scripts/FileContentIndex/d3287822-0324-4b33-a0a0-dbeba6d76a11.vsidx
+.vs/OMERO-scripts/FileContentIndex/read.lock
+.vs/OMERO-scripts/v17/.suo
